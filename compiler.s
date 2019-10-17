@@ -344,7 +344,7 @@ DOBECOMES:
 ;    move.w  0(a0,d0),(a4)+
 ;    jsr GVA1D2_0
 ;    bra DOINSOUT
-.;C0:add.l   d0,4(a5)
+;C0:add.l   d0,4(a5)
 ;    sub.l   d0,4(a5)
 ;
 
