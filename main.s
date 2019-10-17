@@ -7,7 +7,6 @@
 
 
 
-
 CREATIVE_VERSION: MACRO
     DC.B    "CreativE "
     DC.B    "2.12.3 (09.07.01)"
@@ -528,28 +527,28 @@ INTERN: MACRO               ; \1=ERRNUM
 
     INCDIR ""
 
-    INCLUDE 'PPC.I'
+    INCLUDE 'ppc.i'
 
-    INCLUDE 'PREPROCESSOR.S'
-    INCLUDE 'INTERNAL1.S'
-    INCLUDE 'PARSE.S'
-    INCLUDE 'IDENT.S'
-    INCLUDE 'ASSEMBLER.S'
-    INCLUDE 'ERROR1.S'
-    INCLUDE 'CHKIDENT.S'
-    INCLUDE 'IO1.S'
-    INCLUDE 'CACHE.S'
-    INCLUDE 'INTERNAL2.S'
-    INCLUDE 'IO2.S'
-    INCLUDE 'INTERNAL3.S'
-    INCLUDE 'COMPILER.S'
-    INCLUDE 'APPENDLISTS.S'
-    INCLUDE 'ADDRESS.S'
-    INCLUDE 'EXPRESSIONS.S'
-    INCLUDE 'ERROR2.S'
-    INCLUDE 'LINKER.S'
-    INCLUDE 'FUNCTIONS.S'
-    INCLUDE 'DATAS.S'
+    INCLUDE 'preprocessor.s'
+    INCLUDE 'internal1.s'
+    INCLUDE 'parse.s'
+    INCLUDE 'ident.s'
+    INCLUDE 'assembler.s'
+    INCLUDE 'error1.s'
+    INCLUDE 'chkident.s'
+    INCLUDE 'io1.s'
+    INCLUDE 'cache.s'
+    INCLUDE 'internal2.s'
+    INCLUDE 'io2.s'
+    INCLUDE 'internal3.s'
+    INCLUDE 'compiler.s'
+    INCLUDE 'appendlists.s'
+    INCLUDE 'address.s'
+    INCLUDE 'expressions.s'
+    INCLUDE 'error2.s'
+    INCLUDE 'linker.s'
+    INCLUDE 'functions.s'
+    INCLUDE 'Datas.s'
 ;; BBS section
 
 ; ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''' ;
