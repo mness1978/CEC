@@ -1,0 +1,127 @@
+Short: The Amiga E v3.3a compiler source
+Type: dev/e
+Author: wvo96r@ecs.soton.ac.uk
+
+This archive contains the source code (in assembly) to the E compiler EC.
+
+WARNING: This archive is for highly skilled assembly programmers with an
+intimate knowledge of E and compilers, who are curious about EC's internals.
+If this doesn't apply to you there's no point in even downloading this
+archive. EC's source code redefines the term "hairy" and will make even
+the best hackers faint.
+
+This source code release is an addon to the freeware release of the E
+compiler, EC v3.3a, which you can get from where you got this or any aminet
+mirror as dev/e/ec33a.lha. You also need the distribution which was already
+available: dev/e/amigae33a.lha. To read all about why I released this all
+for free, read http://www.ecs.soton.ac.uk/~wvo96r/e/efuture.txt
+
+As far as distributing the _unmodified_ archive goes, it is freeware, you can
+distribute it in any way you see fit, i.e. via the internet or on CDROMs. The
+only (obvious) exceptions are that you aren't allowed to make money out of
+selling EC, and you're not allowed to change anything about this archive. Thanks.
+
+
+I discourage people to distribute modified versions of EC, but if you feel you
+really have to, a different set of rules applies:
+
+As long as the modified compiler & source don't leave your system, you
+can obviously do anything you please with it.
+
+If you wish to re-distribute a modified version of EC you made, you have to
+comply with the following rules:
+
+* besided the new executable, you also distribute the new modified source
+  that generated it. EC's source code adheres to a similar scheme as "Open
+  Source" or the "GNU public license" with the only difference that you
+  don't need to include their licenses.
+
+* You make very clear in your executable name, archive name, program welcome
+  message and anywhere else that this is YOUR version of EC, not the original,
+  i.e. someone who downloads your EC shouldn't be confused as to who made this.
+  Make sure you give the whole project a different name (e.g. BobsEC), and a
+  version number higher than 3.3a.
+
+* You clearly mention me as the original author, refer to the 3 original
+  archives mentioned in this text, and in general do your best to educate the
+  users of your version to understand how this software came to be.
+  Obviously if they want to modify/redistribute your version, they should
+  also have read the texts in the original archives.
+
+* EC is unsupported, so don't come back to me to ask wether you can have
+  your changes incorporated in the next official release, because there
+  won't be any. Instead, look around on the internet (the E mailing list
+  is a good place) for other people interested in doing an extended EC, and
+  cooperate with them.
+
+
+Now to the hard bit, modifying EC's source code. As mentioned above, think
+long and hard wether this is a really a sensible thing to do, and when you
+have decided yes, think long and hard again. In the later years of
+development, modifying EC required a very concentrated effort to modify and
+debug, especially doing it correctly to not introduce new problems. EC's
+source code is terribly complicated, very badly programmed, and contains more
+long distance dependancies than any bit of code I've ever seen. In short,
+unless the modification you intend to make is absolutely trivial, writing
+the compiler from scratch would be a lot quicker.
+
+Given that you still want to modify it:
+
+* the code was written using AsmOne, most recently with version v1.25. Don't
+  ask me to send it to you, because I don't think it's public domain.
+
+* If you insist on converting it to another assembler, be prepared for a lot
+  of work. Realise that a lot of the code in the source plays a role in the
+  code generation process, and as such is more critical to change than any
+  other assembly program would be: for example occurrences of MOVE.L #1,D0
+  in the source might be there for me to grab its opcode, if your assembler
+  changes that to MOVEQ #1,D0, the code generator will generate illegal code
+  and all compiled E programs will crash, and it'll be very hard to find out
+  why it went wrong. So make sure you disable any flags/options of your
+  assembler that try to optimise or otherwise change the code.
+
+* register usage is completely non transparant, i.e. if a certain register
+  isn't used for an entire subroutine, you can't assume it's free to use.
+  there are all sorts of weird conventions, and many registers span entire
+  sections of the compiler in their lifetime. Basically if you modification
+  is in need of registers (and it will be) your safest bet is to JSR
+  from the point where you want to insert the new code, safe all registers
+  that you will be using and in general make sure that you restore the
+  machine state to exactly how you found it. Failing to do this WILL
+  introduce new hairy bugs.
+
+* the whole compiler (>80k) is written in small model, i.e. uses 16bit
+  signed branch offsets, so insert new code at the end or start, otherwise
+  you'll break a lot of branches.
+
+* the source code contains hardly any comments :P
+
+There are tons more pitfals, but these are the most obvious I could think of.
+
+
+besides the actual source code, the following files have been supplied in
+the extras/ dir with the sole purpose of helping people who intend to
+modify/enhance EC. The files are supplied AS IS, please don't come and ask
+me to explain to you what their contents means.
+
+extras/TODO.TXT:
+  the most recent todo list I had for future releases. May give you an idea
+  as to what bugs havent been fixed should you get to the point of improving
+  EC a lot.
+
+extras/EC.TXT
+  this is the text I used internally to keep track of data structures and
+  other data used in EC, as the source itself is rather unselfdocumenting.
+  This text could help you a bit in trying to understand EC's code, but
+  most of the data structures in this text contain no documentation, so
+  you're on your own as to what it all means. Still its better than nothing.
+
+extras/utils/
+  E source code to utilities supplied in the distribution, i.e. showmodule
+  and others. One utility called ecdebug can dump some of the internal
+  data structures of EC while its running (run it as EC HOLD in another shell),
+  and can be easily extended.
+
+
+Wouter van Oortmerssen, march 1999
+

@@ -1,0 +1,772 @@
++---------------------------------------------------------------+
+|	TODO for next release					|
++---------------------------------------------------------------+
+
+- jasons sc.e crashes with textview.e -> needed recompiled sctext.e,
+  put in distr.
+- ignore EXPORT if were not in a MODULE
+- problems:
+
+>   OBJECT foo
+>     bar
+>   ENDOBJECT
+> 
+>   PROC main()
+>     DEF x:foo
+>     WriteF('\d\n', x.bar.bar)
+>   ENDPROC
+
+- Facos() / Fsinh() crashes?
+
+
++---------------------------------------------------------------+
+|	PUBLIC TODO LIST					|
++---------------------------------------------------------------+
+
+	Bugs I haven't been able to reproduce:
+*	compilation problems on 060
+*	broken Lock in combination with MCX
+
+	Bugs still not fixed:
+*	dereferencing an untyped OBJECT member is not properly interpreted
+	as "PTR TO CHAR". Easy workaround: Give the member a type.
+*	debug hunks don't contain directory information for projects
+	split up over sub directories.
+*	error reports can sometimes be off by several lines.
+*	error reports for inline assembly often doesn't work.
+*	unreferenced check too conservative in some cases.
+*	doesn't detect two library functions with the same names.
+*	constant folding optimizer often misbehaves, disallowing
+	you to do things like `1+SIZEOF o' in constant expressions
+	or 1+a as list-elements.
+*	internal linker problem doesn't allow for private methods.
+*	strings in lists cannot be joined by "+" (optimizer problem).
+*	StrCopy/MidStr don't fill dest with empty-string if len=0
+*	methods and procs in one module cannot have the same name
+	(other than by inheritance).
+*	Exists() evaluates all regardless.
+*	SUPER doesn't check wether the superclass actually has such
+	a method.
+*	recompiling a module that is being used at the same time
+	by another invocation of EC can give problems.
+
+	Future Todo's
+*	fix above bugs :)
+*	extend CONST expressions with floats etc.
+*	find a way to split up executables in more hunks
+*	add symbols for methods
+*	lots of extensions to the optimizer
+*	proper 020+ support
+*	improve error reporting
+*	class variables
+*	short-circuit AND / OR
+
+	Wild Ideas (aka Big Todo's)
+*	plug a general back-end onto EC (to allow for code
+	generation to other cpus (e.g. PPC) or even languages
+	(e.g. C) or better optimizers etc.)
+*	extend the language with lambda's / higher order
+	functions / lazyness etc.
+*	concurrency system based on Linda
+*	better debugging / analysis / type inference tools
+*	full visual language on top of E
+
+
++---------------------------------------------------------------+
+|	TODO for maybe some future release ?			|
++---------------------------------------------------------------+
+
+
+
+	[unconfirmed bugs / could not reproduce / does it make sense?]
+-	doesn't compile large sources on 060
+-	lock still doesn't work in some circumstances (v2.1b does work ok, does work
+	with snoopdos, doesn't with mcx: register trashing?) [tried with mcx no prob]
+-	bug: object x; x; x; ENDOBJECT no all detected
+	-> tested all combinations with modules and inheritance, no prob
+-	LIBB_DELEXP is meant to be used on lib_flags, not sb_flags, though
+	sample.library does it this way and it seems to function ok?
+-	the GTMENUITEM_USERDATA(x) macro doesn't work [jolyon]? not true.
+-	flushcache flushes all
+-	unsigned comparison????: no practical example sofar
+-	[2,4,826,0,$1C8E],[2,4,27,0,$2A7E],[9,4,207,0,$802E] on a 030 no hits: which EC?
+-	DEF a[; missing "]" found only in next proc!
+-	myfunc(a,b,[blah1,BLAH,[foo,[bar,NIL,a])          <error here>
+-	in v3.1a: EC INTERNAL ERROR [2,0,-1,1,$0] (please report!) (Started this while an other EC was compiling...)
+-	not in exec.m: private functions. (no prob?)
+-	supposedly tools/pt.m would not produce a sound on 030, but does on 020 same
+	config [tried on my 030 which works]
+
+	[bug-fixes]
+-	a membor 'bla' and a method 'bla()' on the same OBJECT collide.
+-	bug: doing obj.f[1] where f is untyped interpreted f as "PTR TO
+	SIZEOF obj" instead of "PTR TO CHAR", because type for next deref
+	isn't properly set. Fixing it however causess
+	imsg.iaddress::gadget.gadgetid to break
+-	sourcecode name in debug hunks misses path if compiled in a
+	different directory, e.g. '*tools/bla'
+-	large mui window def, comma fails in the middle, error at first line.
+-	MULU.W  A0,D0 (error) gives ERRBYTE of 0
+-	library bases are shown as unreferenced if only calls (opened in other module)
+-	bug: proc (or libsfuns) with same names from libs aren't detected!
+-	bug: RealVal('\0...') = 0
+-	since CONST idents aren't resolved until the end of the line in lex,
+	RAISE IF gives 'immediate value expected' instead of 'unknown keyword/const'.
+-	INCBIN doesn't work in ASM mode !
+-	OBJECT testobject;ENDPROC;PROC main();ENDPROC -> gives label expected at "main"
+-	StrCopy returns NIL on empty string. check retvals other stringfuns as well.
+-	ERRBYTE = 0 als MODULE 'x' \n 'y'  (no comma)
+-	module by o2m with empty section causes [3,0,-1,1,$0]
+-	EOR.W   #xx,Dx   not automatically translated to EORI
+-	(in main:) if in an object in a module there is a "PTR TO x", and the
+	module defining x is not included, attempting to dereference to a
+	member in x gives "illegal use of/reference to object", whereas
+	"x undeclared" would be more helpful. (while loading EC converts
+	"PTR TO x" to "LONG" if "x" can't be found).
+	-> have a typed object member in a module remember type even if obj is not available.
+-	a local in a proc in a mod is not shown as unreferenced
+-	unknown function only shown after (...) ?
+-	obj::class.method() ignores ::class part!
+-	1*SIZEOF LONG werkt niet want ASM_GRABVALUE kent geen SIZEOF LONG
+-	macro prep kan #define DEBUG -> etc niet, want comment stopt bij 0?
+-	2x zelfde label naam -> geen error! (x: na x: of x())
+-	een module met alleen labels en inline asm geeft scope errors
+-	private classes in een module worden NIET geexporteerd,
+	dus krijgen ook geen geinit delegate obeject in main!!
+	temp solution: compiler forces export
+-	I can declare instance var "x" even if already in super
+	(and access both via different pointers!)
+-	strings in list cannot have "+"
+-	MOVEQ doesn't accept -128
+-	StrCopy/MidStr don't fill dest with empty-string if len=0
+-	tools/vector.m saved geen regs
+-	can't have methods with the same name without inheritance.
+	methods and procs in one module cannot have same name.
+-	flushing: what if .m's get flushed currently used by EC?
+-	SUPER doesn't check if super has a method there
+	-> could pass a maxoffset to expcallmethod
+-	Exists() evaluates all regardless
+
+
+	[todo]
+-	"-D" like switch for defines
+-	floats in CONSTs etc?
+-	see etext/truelambda.txt!
+-	one hunk
+-	lowercase sourcename
+-	() in constexp (and maybe other things)
+-	%bin for binary nums
+-	a read_e_module(): jason/gregor/vincenzo and others
+-	"LINE" debug of modules -> "L" thus unusable with enforcer!
+-	some space in library node for magic values?
+	GoldED (V3) syntax-parser 'magicid' ("SCAN") at offset $24 in libbase(a6) ($22=exec base size, +word pad)
+	-> could easily preserve $22 to $32 or so for own data... how to give A6 to
+	main() so that magic can be poked there?
+-	symbols for methods?
+-	\num for strings?
+-	"::" on anything? -> on typedecls as short for ":PTR TO "
+-	for libs: stack alloc [] or somesuch. warning for [] in opt library
+	maybe a NEW equivalent for existing mem (and stackmem?)
+-	linenum by var used as function warning?
+-	put some forbids in modulecache access.
+-	faq: more interesting questions (how to start on own compilers etc.)
+
+	[code-optis]
+-	OPTI: lea 4..8(A7),A7 --> ADDQ
+-	OPTI: CMP.L #1,D0 --> MOVEQ #1,D1; CMP.L D1,D0
+-	OPTI: recognise a:=a+<exp>
+-	OPTI: ELSEIF doesn't optimize EXTs away
+-	OPYI: LISTs should make use of EXPEA
+-	OPTI: get rid of LINK iff no args + only REG locals
+-	OPTI: optimize NEW [1,2,3] code with EXPEA
+
+	[020/030/040/881]
+-	680x0 code gen.
+-	jsr --> bsr.l  (no relochunks needed!)
+-	array/record access etc. with  ([base,a5],d2*4,1)  etc. (FAAST!!)
+-	EXTL etc. + see how other 020 modi can be applied
+-	020/881 asm
+
+	[unstablenesses]
+-	[..] allows for private CHAR fields to be cleared,
+	NEW [..] allows all private fields.
+	prob = CHAR is equal to align byte
+-	arrange for double declarations in idents from module etc.
+-	check more number of args etc. where main->b->c, c is
+	changed and recompiled, but b is just linked.
+-	OPTIBUG: OPTIIF makes too many assumptions about code
+-	we might need a token-look-back-stack or similar for lex
+
+	[module-system]
+-	o2m: maybe do something with C in .library-link mode.
+-	o2m: "Raise" en "dosbase" als XREF
+-	checksums on modules
+
+	[errors]
+-	selected multiple errormessages for most occuring errors
+	(lex, for starters) with per-case specific recovery code (+ switch)
+-	catch errors in writemod: otherwise readlock
+	Locks on modules when error from moduleload
+-	calc Levenstein distance for idents? unknown=Writef, suggest: WriteF
+-	problems with error-reconstruction:
+	- assembly not properly supported
+	- stat;stat wrong spot error
+	- problems if "->ENDPROC" last line
+	- bla,bla <no_comma> ->comment <lf> <err_spot> bla,bla
+	- "....:REG",10,"<here>whatever"
+-	meer foutmeldingen, syntax error opsplitsen
+-	foutmeldingen in andere talen (frans/duits/italiaans)
+	(locale.library??)
+
+	[EC]
+-	resident check?
+-	SHOWBUF option also lines/minute etc.
+
+	[compiler-organisation-OPTI]
+-	raise-tab linked maken
+-	enlarge hash tables from 211 to near 1024
+-	change all sorts IF-THEN situations into jump-tables
+-	OPTI: hash bij first search members tijdens lex?
+-	OPTI: E-system functions ge-hashed
+-	OPTI: intui/exec/dos/gfx functions ge-hashed
+
+	[code-generation]
+-	chip/data hunk stuff? INCBIN x TO CHIP/DATA -> how to put in var?
+	more code hunks?
+-	Jan Schulz zn SELECT idee
+-	better implementation of [1-x] etc.
+-	lists have to be able to get longer then a few hundred entries!
+	prob: runtime stack (just a little).
+	better code gen altogether?
+-	LANGUAGE TEST SUITE for code-gen testing
+-	write disassembler for E exe's to some interim language.
+
+	[inline-asm]
+-	asm instr + LONG use of reloc possibilties
+-	MOVE.L .member:obj(A0),D0
+
+	[run-time-system]
+-	if >37 then conout AUTO/WAIT/CLOSE
+
+	[oo-language-features]
+-	method hiding
+-	x  <=>  self.x  ??
+-	constructor without need for pointer
+	allow NEW [..]:x.constr(), since '..' inits only public fields
+-	SHARED (class variables) as "Side Effect Functions"
+-	private methods
+-	PROBLEM: auto-destructors <=> exceptions
+	for now: ONLY DYNAMIC objects from classes.
+	sol: linked list on the stack, upon raise etc. call destructors
+	below return stackpoint. data=(next,objptr),depth=stackptr,
+	destructor at fixed offset.
+	[END (do it yourself),normal ENDPROC,Raise(),CleanUp()]
+
+	[language features]
+-	E component project doen? (weinig werk voor mij)
+-	tagged args doenbaar? (helpt niet erg voor easygui) tagged objects+defaults dan mischien?
+-	FastString() etc., -> table in docs
+-	more constexps (enum/select_of)
+-	richer constexps (and/shl/mod)
+-	let "::" work on anything, so you can do gfxbase::gfxbase.defaultfont
+	:: on any exp (only lhs)   func()::y.x
+-	macros should allow for macro()
+	-> module format has nargs=0 as macro, not macro()
+-	case insensitive OstrCmp() (how localisation?)
+	-> better: convert all stuff to one case anyway, or use utility.library
+-	EXIT in LOOP and REPEAT
+-	+:= for self.x:=self.x+1 cases
+-	ASSERT / DEBUG..ENDDEBUG
+-	_vector_ calc on lists?: MAP x,y,z IN x:=fun(y)+z+a*10
+-	Linda tuples + persistance (combined with Linda / as a class to
+	inherit from / special language feature ??)
+-	RENAME statement? could work with almost all types of idents.
+-	LOOP as short form
+-	IF a AND THEN b ..., IF a OR ELSE b ...
+	BUT AND/OR <=> major probs OPTIIF
+	x BUT OR y    =   IF x THEN x ELSE y   =   r:=x; IF r=0 THEN r:=y
+	x BUT AND y   =   IF x THEN y ELSE x   =   r:=x; IF r THEN r:=y
+-	UNIFICATION:
+	- strings: _pattern_matching_ REGEXPs, and string binding
+	- ranges and comparisons: a <=> [1 TO 10,<5]  (watch <5 with CONS)
+	- UNIFY more than one exp with list of patterns (a la SELECT)
+-	ENDSELECT <var>   (beter als ListItem hack)
+-	NOT unary operator (mischien ook "-")
+-	more useful quoted expression functions
+-	[<constexp>]:ARRAY
+-	const exps pre-calc uitbreiden met ">" "AND" etc.
+
+	[docs]
+-	extend the FAQ! be even clearer about pointers? -> hints & pitfalls for beginners
+-	an INDEX!
+-	[chapter on optimizing, more on (data)types
+-	design_of_e, good_programming_style, debugging etc.
+
+	[dist]
+-	UTIL: fd2module
+-	Lex equivalent for E
+-	large set of utils in E, a la diff/grep
+-	p2m en Iconvert update with options:
+	- examples: keep_prefixes egs_window etc.
+
+	[modules]
+-	serial.device!!
+-	also very simple things, like classes for intuition etc. -> as many HQ mods as possible!
+-	SEE: container classes
+-	task object ofzo
+	functions for tasks. (see E source) +other amiga.lib
+	geta4() routine etc.
+-	common Lex() routine.
+	lex+pars
+-	play samples, allocating channels, playsample() audiodevice support
+-	garbage collecting string-lib
+-	String matching (regexps) Parse() en Match() routines
+-	bignums.m: lijst [] of LONGs makes up an integer of any size
+	use ADDX. how opti for short ints?
+-	bobs, sprites
+-	fast mem-copy + string shifting [b], fastinsert/delete
+-	all sorts of Rexx string parsing stuff
+-	OohNo! module
+-	24bit module
+-	harwarebang module :-)
+-	structure:
+	emodules:tools/		-> general tools supplied with E
+	emodules:class/		-> same, but now as class
+	emodules:other/		-> tools not standard with E, 3rd party stuff
+	^^^nobody listens to that...
+
+
++---------------------------------------------------------------+
+|	DONE !!!!						|
++---------------------------------------------------------------+
+
+[see other texts for pre-v3.0a stuff]
+[sofar EC627 (=3.0a)]
+
++	odd-size created with NEWM macro -> internal errors on 68000
++	ODEL field not properly set in all cases of NEWMETHODS
+	caused delegates not to be constructed -> method probs!
+++	keep track of PTR TO object idents from modules, and find
+	objects after lex. (not found = no action)
++	modules: 4 bytes of code [mathexit generated RTS]
++	defargs of method not installed correctly after moduleload
++	double-decl test on method tests for bit that wasn't set yet
+	thus: not possible to redefine method for subclass!
+
+	[EC631;v3.0b, released as such (patch)]
+
+	[EC632;v3.0c]
++++	debugger! DEBUG/S option also switches on LINEDEBUG/S
+	+ adds NOPs and EVAR hunks.
+++	SUPER method calls possible! notes: [calls from there
+	not super, super-calc is static]
+	[EC639;c3.0c]
+
+	[EC640;v3.0d]
++	enforcer hit in linker fixed (strcmp)
+++	BIGBUG: BSR GLOBJUMP
+	in initcode didn't work with modules-total >32k!!!!!!!!!
++	code-buf estimate bigger ivm modules in small main
+	now starts at 100k ivp 50k, and ReadArgs allows ADDBUFs
+	1..1000 (each *100k add, i.e. max 100meg exes)
++	method_arg_stacklea bug: code for SUPER trashed reg
++	bug: String() would trash D3
++	bug: error report within OBJECT always on 1st line
++	modules with only constdefs etc. would still save debughunk
++	compiler would accept things like PROC pippo(a,b,)
++	method def of object in other module!!! now illegal.
++	BUG: privateness would continue in next object decl
++	AND.L Dx,regvar (and similar constructions, such as with ADD)
+	assembles as AND.L Dn,ea instead of AND.L ea,Dn	-> ILLEGAL!!!
++	CMP.B A3,D0 (and other An <=> .B) -> ILLEGAL!
++	temp export force on accessed classes.
+	[EC655;v3.0d]
+
+	[v3.0e released as patch]
+
+	[v3.0f]
+++++	newer EDBG!
++++	Macro preprocessor and conditional compilation!
++++	enhanced EasyGUI
+++	a FAQ!!!!
++	doc
+	* .guide niet duidelijk genoeg
+	* error doc: too size exp also strings
+	* Organise, optimise... It's organize and optimize!
+	* ERROR: illegal use of/reference to object LINE 66:   NEW raum[MAX_RAEUME]
+	* prob: bij module main->a->b, add method in b without recomp a: crash.
+	* In the E.doc it still says "use <another_function>".
+	* syntax errors in <|> syntax!!
+	* no mention of *2 *4 /2 /4 getting optimized
+	* in 4K: automatically at the end of the program, or by hand with ___Dispose(p)___
+	* Fexp(y) gives e^y, not y^e, Fpow(y,z) gives z^y, instead of y^z
+	* explain SUPER
+	* docs: better con-destructor explanation
+	* remarks in letter Martin F. Combs
+	* how to report bugs
+	* no language suggestions please
+	* reg. sites
+	* refs naar ML,EPD etc. -> in FAQ
+	* anti-serge hamm. message
+-	dist: fonts, nieuwe aprof
+-	fix errors in stack
+-	BUG: method with equivalent name inobject wouldn't work (left,name...)
+-	BUG: nested method calls disturb self at call site
+-	closing brackets would continue until decl of next proc with stange error,
+	now "missing )" at endproc
+-	demoversion limit to 8k
+-	finished macroprep + save macros. tested with BGUI/MUI
+-	lets fix it on "FastDisposeList()" + LONG align opti for NEW [1,2,3]
+-	unification bug in LISP-lists <>
+-	RealF(s,-3.14159,0) produces '-', RealVal() returns bagger as readlen?? (68000?)
+	RealF(s,12345.67,4) produces '1234.6699'??
+	more than one complaint about RealF on 68000
+	FIXED: all non-regsave 68881 vs. emulation
+-	flushcache flushes everything
+-	E-build executes actions in reverse order! :-) -> jasons version in dist
+-	docs: linedebug buiten procs
+-	docs: EXPORT gebruik met methods? currently not poss., EXPORT voor nonsense
+-	smod uses proper commandline arg (for completion)
+-	dist: nieuwe modules, sources etc.
+-	devices/serial.m termarray member were 0,1
+-	In inputevent fehlen ie_x, ie_y und ie_addr. Warum? -> in C it's a union
+-	BUG: SUPER doesn't work as exp
+-	list consts will accept no negative floating point
+-	SMOD doet foute arg-idents met nummers + defargs
+-	PROC ...IS obj.unknown; PROC <HERE> ...
+	Without following pro: internal [3,3,-1,0,$750E]
+	.unknown had a continue_on_next_line because of .method()
+-	docs: explain all new features
+-	docs: nieuwe errors
+-	finish easygui -> in DIST!
+-	finish EDBG
+	* weird bugs: doesn't find vars in allx.e
+	-> in DIST!
+
+	[EC666, v3.1a, released as such]
+
+	[EC667, v3.1b]
+-	BUG: .L in some instructions needs to be rejected, f.e. MULU.L #3,D1 = bagger
+	(done for mulu/muls/divu/divs)
+-	BUG: labels not in symhunk
+-	BUG: ASR.B   #1,(A0) word toegestaan (alleen ASR.W geldig hier)
+-	BUG: Bounds(-1,0,255) -> 255
+-	BUG: macros of other module are saved AGAIN in current module
+-	BUG: 1/0 causes internal error
+-	stringf/textf made use of task-stack, now e-allocated-stack (like writef does)
+-	various emodules with problems, but fixed in v40 (datatypes/datatypesclass.m)
+-	v40 std modules in EC
+-	BUG: voegde linedebug toe voor elk statement, maar alloc alleen voor elke
+	sourceregel (nu alleen linedebug voor stats zonder ";" ervoor)
+-	forth.e closes console twice (still!)
+-	HUGEBUG: exp*globvar in module not compiled ok: not offset-2
+	now also operand_size in modules >= v10 (makes incompat!)
+-	bug: .B etc. at end of stat didn't work
+-	globals in modules used in inline asm were not exported/offsets adjusted
+-	incbin does any size no prob!?
+-	a-- where a:PTR TO o where SIZEOF o>8 translated into ADDI ipv SUBI
+-	ignorecache werkt niet: trashes own cookie. by load module.
+-	macros don't allow for ";"
+	-> disabled altogether ivm problems in eol-processing otherwise
+-	show expanded text within macros -> only for lex-phase
+	[EC676, v3.1b, to_jason]
+
+	[EC677, v3.1c]
+-	fixed bug in easygui: used gl instead of glist
+-	another bug in easygui: listv put userdata in all parts
+++	NILCHECK/S, build in NIL checker for deref! raises "NIL" for "." and "[]"
+-	bigbug: (found in niklas' sources): when adding methods to an object that
+	inherits from a method-less object, delegates would start at 0 (not 4),
+	thereby trashing the object_dynamic_length and causing END trouble.
+-	self.s <=> <x|y> gives syntax error
+-	LEA -99(A2,D0.W),A2  becomes  LEA -$0063(A2,A7.L),A2  ??? -xx(Ax,Dx.w)
+-	NEW en END moeten ook op subobjs werken.
+-	edbg: show current line one too high in t/test2.e -> file
+	[EC685, v3.1c, to_jason?,pnolan]
+
+	[v3.1d]
+-	EasyGUI: fixed newlook menus
+-	EasyGUI: activates first stringgad
+-	EDBG: doesn't work with SYM hunks
+-	EDBG: cursor keys: down = step over, right = step in
+-	EDBG: output to debugger window?
+-	EDBG: source menu option improved
+-	EDBG: menus in strange colour
+-	EDBG: scroller prob
+-	EDBG: doesn't jump to correct spot if outta sight.
+-	EDBG: doesn't display tabs: tempfix: convert to space
+-	EDBG: better graphics for toolbar & about
+-	EDBG: breakpoints on sourcelines
+-	EDBG: breakpoints on memory/vars
+-	EDBG: run upto breakpoint
+-	EDBG: E expression parser for all value/addr inputs
+-	EDBG: Raise()
+-	EDBG: shows vars own proc + globals only (scoped!)
+-	EDBG: watched variables window
+	[v3.1d, to various persons]
+
+	[v3.1e,EC688]
+-	.library output
+-	integrated jasons newest modules, etc.
+-	new easygui integrated
+-	new EE
+-	easygui leaves 160 bytes if exception from callback: missed a ReplyMsg()
+-	forbid when changing task-a4 table!
+-	#else mentioned in some error messy
+-	sc.m etc.
+-	BUG: /2 added 1 also for >0
+-	unknown ident of functionname still at the end.
+-	doc:
+	+ clear about where globals need to be defined
+	+ too many use flushcache
+	+ SELECT_OF takes n-1 as max, not n (DEFAULT)
+	+ labels ook exportable->doc
+	+ (wrong!): ' ARRAYs are declared by specifying their lenght (in bytes) '
+	+ explain that error message can point as much as 2 tokens beyond real cause of error.
+	+ FastDipose#? accepts NIL
+	+ macros don't do ;
+	+ libdoc: eg, and what happens to stdout etc.
+	+ FAQ uitbreiden
+
+	[v3.2a, EC707, released as such]
+
+	[v3.2b,EC708]
+-	hung or gave wrong error on procident.member [jaco]
+-	prepbug: rkrmsrc/intuition/windows/lines.e. internal [2,3,232,0,$698] on 68000
+-	It has problems using control characters or extended character set characters in #defines
+-	extra safeties for preprocessor (i.e. tries to expand interim buf after each
+	macro expansion).
+-	'W\0Save Statistics...' exists in the compiled binary as 'W' (under 3.1)
+	[v3.2b,EC712,released to almathera]
+
+-	eg: fixed an enforcer hit
+	v3.2a all.e with EC DEBUG byte reads (-1,0) on amosaic & font, from rom(-1) too. 569A(0) (= StrLen)
+	EDBG v3.2a byte-reads from addr. 0 hunk offset E6FE (often when an easygui opens/closes?) (= StrLen)
+-	eg: cleangui() -> $DEADBEEF mem already freed: used window after closing!
+-	eg: added settext() and setnum()
+-	eg: fixed NUM gadget
+-	eg: advice not to give to high values for proportional values because of high fonts (fheight*val)
+-	eg: topaz function
+-	eg: easygui renderen soms in bottom border: check wborbot! check with sysihack
+-	eg: PLUGINs!!!
+-	eg: there might still be some string-fields causing hits at -1 in an OS call?
+-	edbg: about & toolbar do not respect bigger borders
+-	edbg: console (+tool+about?) don't work on PUBSCREEN
+-	edbg: sourcenaam in title
+-	edbg: check doubles in var view
+-	edbg: save & loads prefs + window sizes + watched vars
+-	edbg: arexx-port & script launching
+-	bug: problem with Lock() in EC: 2 instead of -2 as mode
+-	bug: $FFFF as default arg becomes $FFFF0000
+-	bug: macro errors printed incorrectly: fixed with a kludge
+-	bug: /* */ in macros didn't work (e:t/macc.e)
+-	bug: OBJECT x OF x not detected and causes major guru in exe
+-	bug: doesn't accept a:REG in 0(A3,a) or 0(A3,a.L) or lab(PC,a) etc.
+-	bug: AND.L D0, tst where tst:REG screws up (changes dest-src, also for OR/EOR etc.)
+	[v3.2e, EC716, released as small update]
+
+	[EC719]
+-	faq: these features will not be implemented (so don't ask for them):
+	* assembly source output by the compiler
+	* .o
+	* inits for global vars in modules
+	* unaligned objectmembers
+	* bitfields
+	* not opening intuition.library etc, in startup-code
+	* automatically include _all_ modules used by a module
+	* `member' ipv `self.member'
+	* DEFs halfway PROCs
+	* disassembly mixed mode for EDBG
+	* sourcecode include
+	* unsigned INT/LONG or signed CHAR
+	* ";" in macros
+	* multiple error messages
+	* x.y in assignment expression, {}
+	* inline code for Shl() etc.
+-	doc changes:
+	* mark all obsolete features in the docs as such (CleanUp() etc.)
+	* :: works only on object types, <>cast
+	* New and NEW behaviour in libraries
+	* you can't have zero argument macros
+	* update registration sites (sweden + germany)
+	* Link() doesn't work on NEW [...] etc.
+	* if you want to use vars from other modules, you have to EXPORT DEF them too
+	* make EXTREMELY clear the error-indication is always after the error!
+	* be more specific about module-loading behaviour (type set to LONG if
+	  object is not defined _before_ this object).
+	* warning for POLAND
+	* E_bonk.e: make clearer that p.i++ works on p, not i
+	* chequepoint stuff
+	* tell crackers about double protection
+	* .end() is not called automatically
+	* In de docs staat het eerste deel van 12A aan het einde van 11C.
+	* backslashes dubbel doen in guide
+	* ^ is NOT equivalent to []
+	* OO alleen met NEW duidelijK?
+	* make clear librarybases are provided by the modules
+	* no lectures on asm, opti in compiler is hard
+	* modules circularity?
+	* OO objs with NEW only
+	* edbg: raise exceptions for current handler only 1 after DEF
+-	tell regs for libraries! myfun(A0), but slower than movem.
+-	in methods with a handler and register allocation on, "self" could
+	be allocated to a register where it shouldn't, and cause trashed
+	variables elsewhere
+-	"EXPORT PROC array( w, h, m=$10000) OF array" with OBJECT array
+        -> dirty backwards parsing, now made more specific
+-	compiles no errors, crashes on run: PROC main();DEF x;WriteF('\d\n',x.4);ENDPROC
+	-> two bugs: floatval would sometimes not lex as float (reg-prob), and
+        not check for preceding operator in expression.
+	[EC722]
+
+	[EC723]
+-	p2m maakt bagger van tweede char als libname bv `E_..' is.
+-	pp:  #define X Unknown; X results in LINE 22:   X ;WITH: Unknown;MACRO: nknown
+-	twice the same label: doesn't give error
+-	FOR x:=0 TO 3 DO FOR y:=0 TO 3; ...; ENDFOR
+-	in the compile part, methods could be called before the corresponding
+	OBJECT was processed (by calling it from an instance variable in a method
+	of an object defined higherup), which caused an intern102, now it is
+	an error71.
+-	double declaration objecthead geen probleem
+-	double declaration objectmember geen probleem
+	also solves nokielski's bug (cd2:src/betas/todebug/pack.lha)
+-	doc: both /* */ and -> are included in macros, -> gives problems
+	[EC723]
+
+	[EC724]
+-	bigbug: cache problem clear: what if compiled module (that needs to
+	be flushed) was accessed from a less deep dir...
+	paths in cache need to be ABSOLUTE
+	NameFromFH/NameFromLock/MatchFirst: all 2.04, all need file access
+	-> solved: flushcache() compares without path.
+-	IEEEbug
+	* patch is for 040/fpu only?
+	* internal errors on 060?!??
+	* make workaround for 3.1 floatproblem!!! [2,11,36,0,$0]
+	* 030/no881/3.1/mmu
+	  PROC main()
+	    DEF x
+	    x:=2.1
+	  ENDPROC
+	* compiling with Blizzard 060 -> "internal Errors": Apollo 1240:
+	  [2,11,38,0,$0]    DEF x=0.0, exp=0.0, pos, pos2,
+	* doc: FAQ: probs with floats in 3.1:
+	  PatchMathSB10.lha  util/boot    4K   7+Patch MathIEEESingBas/SPDiv,SPMul
+	-> EC warns + messys in docs.
+-	in Iconvert for PhxAss:
+	1) in makeasmfile(), just before the WriteF(' INCLUDE...), I added this line:
+	   WriteF(' TTL ""\n')
+	  (this line ensure that the chunk won't get any name, like A68K does).
+	2) The new command line for invokea68k() is:
+	   IF Execute('SmallPhxAss I INCLUDES: FROM ram:iconvert.s noexe opt 0',NIL,stdout)=FALSE THEN error(ER_INVOKE)
+	-> added option "-p" for phxass
+	[v3.2g, EC724, to jason]
+
+	[v3.2h, EC725]
+-	device with library feature: not possible without different startup-code, or
+	atleast various registers made available to main() and close() -> doc
+-	doc:
+	* E source should contain atleast one function
+	* e reg is personal
+	* #define CharIsX(x) (x="x") substitutes the "x" too.
+	  handy, i.e.: #define debug(x) (WriteF('now evaluating: x\n') BUT x)
+	* main() in lib works under Forbid() of OpenLibrary()
+	* homepage!
+	* FAQ: more on resources (available translations)
+-	eg: extra arg to plugin methods for font
+-	sw: PGA_TOTAL wasn't updated (refresh_scrollbars() (to allow max to change))
+	-> needed in EDBG for varwin
+-	edbg: var view scroller altijd 100%
+-	edbg: a search (for large sources)
+-	edbg: zwarte balk in onderste regel, dan window met een regel kleiner maken: rendering in border
+-	doc
+	* shr is ASR
+	* writef/printf string limit.
+	* address
+-	edbg: fixed enforcer hit in deletetoolbar
+-	fixed obj/member double decl test enfhit
+-	new tools, e.g. Iconvert, p2m, doc2guide? etc.
+-	explorer?
+-	include jasons rkrm2
+	[v3.2i, EC725, for Amy Resource]
+
+-	[easygui: over to jason]
+	[unreproduced bugs]
+	* eg: PALETTE: If the relx Argument is smaller than 3 it has got problems (Recoverble alert, hang-up)
+	* eg: double menu-selections do not trigger actions multiple times
+	[features]
+	* eg: maybe supply a host of handy plugins as standard (for images / image gadgets / boopsi gadgets etc.)
+	* eg: support GTLV_SHOWSELECTED (what were the problems?): really wanted
+	* eg: allow cut of window: smaller than minimum and solves small screens too?! panes? pages?
+	* eg: Other IDCMPs and messages (i.e. rawkey!)
+	* eg: the MX gadget does not use the "abovetext" field
+	* eg: APPWINDOW?
+	* eg: maybe builtin topaz fallback??
+	* eg: block input on other easygui's
+	  prob: - intuition/blockinput.e doesn't stop resize and has ugly waitptr
+                - IDCMP_SIZEVERIFY not appropriate for long periods
+	  better: if >1 window, process them all!
+	* eg: size num voor slider berekenen.
+	* eg: text in screenmode can't compute max, same for sqrt in raymond
+	* eg: bug: midsize align is mixed when one gadget has text on the left and other
+	  on the right
+-	[edbg->to->jason]
+	* allow input hunkoffset->source in EDBG (cooperation with enforcer)
+	* allow obj editing with explorer
+	* double clicking on scroller gives breakpoint
+	* (see uncommented stuff (=new) in begl2) es wird nur kein SELECT <zahl> OF <variable> weiter verfolgt
+	* with many modules, source window tiling gets too small
+	* allow to break program while running? (non trivial)
+	* no builtin global variables
+	* show changed registers (and vars?)
+	* really describe all features in doc
+	[edbg, less urgent]
+	* skip statement/jump?
+	* object browser!
+	* repeat step in/over "exp" times (so in a for-loop of 3 lines, step over a-1*3)
+	* record step as rexx script
+	* do something about debug-interactivity or rexx-scripts
+	* more gadgets in toolbar
+	* enable more windows to hang around instead of requester-like
+	* add all builtin vars. what about other librarybases? -> redefine
+	* make memory and other stuff modifiable
+	* optimize refresh of some windows
+
+	[EC726, v3.2k]
+-	bug: doing obj.f[1] where f is untyped interpreted f as "PTR TO
+	SIZEOF obj" instead of "PTR TO CHAR", because type for next deref
+	wasn't properly set.
+-	bug: module-flush flushed only first module that matches. now guaranteed if
+	you compile x.m from anywhere, all modules called x.m (any path) will be flushed.
+	(also when you create a .m with LIBRARY)
+-	enum now works with negative numbers (ENUM AA=-1,BB,CC)
+-	if the source for a LIBRARY contains a proc close(), it will be 
+	called when the user of the library calls CloseLibrary() (i.e. it is
+	the counterpart to main()). [close still mentioned as unref]
+-	OPT RTD flawed in the context of hooks, call backs etc -> disabled
+-	include other float ops ArcSin, ArcCos and ArcTan etc.
+-	"self" now has own (code 5) entry in debughunk for EDBG -> jason?
+-	bug fix of obj.f[1] undone :( now part of known bugs
+-	dist: include ieee patch? -> setpatch v43.6
+-	dist: texturemapper (v7)
+-	dist: nieuwe sw
+-	docs:
+	* validness of other registration sites
+	* fabio's new ML
+	* better email warning
+	* add to version history
+	* new float functions
+	* new features etc.
+	* make a known bugs list and a todo list (without any promises!)
+-	dist:
+	* fabio's objects
+	* gregors OOstuff, new build
+	* edbg: do more tests: doesn't find vars correctly. test self
+	* jason's EasyGUI, EDBG etc.
+	[-> out as beta to jason/gregor/fabio]
+-	incorporated some final tiny changes
+-	ebug.e: battclockbase not real base so needs EXPORT DEF
+-	EDBG sources
+-	demo ec + patches for 30 31 32
+	[EC733, v3.3a final release version]
